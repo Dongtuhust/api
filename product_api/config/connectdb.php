@@ -3,7 +3,7 @@ class Database{
  
     // specify your own database credentials
     private $host = "localhost";
-    private $db_name = "ps4db";
+    private $db_name = "new_product_service";
     private $username = "root";
     private $password = "";
     public $conn;

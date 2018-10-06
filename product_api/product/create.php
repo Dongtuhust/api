@@ -19,12 +19,12 @@ $product = new Product($db);
  
 // get posted data
 $data = json_decode(file_get_contents("php://input"));
- 
+
 // set product property values
 $product->name = $data->name;
 $product->price = $data->price;
 $product->description = $data->description;
-$product->product_image; = $data->product_image;;
+$product->product_image = $data->product_image;
 $product->detail_image = $data->detail_image;
 $product->distributor = $data->distributor;
 $product->quantity = $data->quantity;
@@ -32,7 +32,6 @@ $product->status = $data->status;
 $product->category_id = $data->category_id;
 $product->created_time = date('Y-m-d H:i:s');
 $product->purcharse_number = $data->purcharse_number;
- 
 // create the product
 if($product->create()){
     echo '{';

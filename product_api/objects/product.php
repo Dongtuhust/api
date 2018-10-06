@@ -93,7 +93,7 @@ class Product{
         $query = "SELECT
                    *
                 FROM
-                    products
+                    products p
                 WHERE
                     p.id = ?
                 LIMIT
@@ -112,17 +112,17 @@ class Product{
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
      
         // set values to object properties
-        $this->name=htmlspecialchars(strip_tags($this->name));
-        $this->price=htmlspecialchars(strip_tags($this->price));
-        $this->description=htmlspecialchars(strip_tags($this->description));
-        $this->category_id=htmlspecialchars(strip_tags($this->category_id));
-        $this->product_image=htmlspecialchars(strip_tags($this->product_image));
-        $this->detail_image=htmlspecialchars(strip_tags($this->detail_image));
-        $this->distributor=htmlspecialchars(strip_tags($this->distributor));
-        $this->quantity=htmlspecialchars(strip_tags($this->quantity));
-        $this->status=htmlspecialchars(strip_tags($this->status));
-        $this->purcharse_number=htmlspecialchars(strip_tags($this->purcharse_number));
-        $this->created_time=htmlspecialchars(strip_tags($this->created_time));
+        $this->name=$row['name'];
+        $this->price=$row['price'];
+        $this->description=$row['description'];
+        $this->category_id=$row['category_id'];
+        $this->product_image=$row['product_image'];
+        $this->detail_image=$row['detail_image'];
+        $this->distributor=$row['distributor'];
+        $this->quantity=$row['quantity'];
+        $this->status=$row['status'];
+        $this->purcharse_number=$row['purcharse_number'];
+        $this->created_time=$row['created_time'];
     }
 
 
@@ -235,7 +235,7 @@ class Product{
         // select query
         $query = "SELECT
                    *
-                FROM  $this->table_name ";
+                FROM  $this->table_name LIMIT ?, ?";
      
         // prepare query statement
         $stmt = $this->conn->prepare( $query );
