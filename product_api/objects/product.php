@@ -44,9 +44,7 @@ class Product{
     function create(){
      
         // query to insert record
-        $query = "INSERT INTO " . $this->table_name . " SET
-                    name=:name, price=:price, description=:description, category_id=:category_id,product_image=:product_image,detail_image=:detail_image,distributor=:distributor,quantity:=quantity,status=:status, created_time=:created_time,purcharse_number:=purcharse_number";
-     
+        $query = "INSERT INTO " . $this->table_name . "(name,price,description,category_id,product_image,detail_image,distributor,quantity,status,created_time,purcharse_number) values (:name,:price,:description,:category_id,:product_image,:detail_image,:distributor,:quantity,:status,:created_time,:purcharse_number) ";
         // prepare query
         $stmt = $this->conn->prepare($query);
      
