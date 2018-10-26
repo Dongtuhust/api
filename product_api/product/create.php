@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
+use PhpAmqpLib\Connection\AMQPConnection;
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -17,8 +19,24 @@ $db = $database->getConnection();
  
 $product = new Product($db);
  
-// get posted data
-$data = json_decode(file_get_contents("php://input"));
+// get data rabbitmq
+$connection = new AMQPConnection('localhost', 5672, 'guest', 'guest');
+$channel    = $connection->channel();
+$channel->queue_declare('product_queue', false, false, false, false);
+
+$data = {};
+
+$callback = function ($msg) {
+  $data =  $msg->body;
+};
+
+$channel->basic_consume('product_queue', '', false, true, false, false, $callback);
+
+while (count($channel->callbacks)) {
+    $channel->wait();
+}
+
+$data = json_decode($data);
 
 // set product property values
 $product->name = $data->name;
