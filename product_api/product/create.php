@@ -14,20 +14,53 @@ include_once '../config/connectdb.php';
 // instantiate product object
 include_once '../objects/product.php';
  
-$database = new Database();
-$db = $database->getConnection();
+
  
-$product = new Product($db);
+
  
 // get data rabbitmq
-$connection = new AMQPConnection('localhost', 5672, 'guest', 'guest');
+$connection = new AMQPConnection('localhost', 31234, 'guest', 'guest');
 $channel    = $connection->channel();
 $channel->queue_declare('product_queue', false, false, false, false);
 
-$data = {};
 
 $callback = function ($msg) {
-  $data =  $msg->body;
+	$data =  $msg->body;
+	echo $data;
+	$database = new Database();
+	$db = $database->getConnection();
+	$data = json_decode($data);
+	var_dump($data);
+	$product = new Product($db);
+// set product property values
+	$product->name = $data->name;
+	echo $product->name;
+	$product->price = $data->price;
+	$product->description = $data->description;
+	$product->product_image = $data->product_image;
+	$product->detail_image = $data->detail_image;
+	$product->distributor = $data->distributor;
+	$product->quantity = $data->quantity;
+	$product->status = $data->status;
+	$product->category_id = $data->category_id;
+	$product->created_time = date('Y-m-d H:i:s');
+	$product->purcharse_number = $data->purcharse_number;
+    var_dump($product);
+    var_dump($product->create());
+// create the product
+	if($product->create()){
+	    echo '{';
+	        echo '"message": "Tạo mới một sản phẩm thành công"';
+	    echo '}';
+	}
+	 
+	// if unable to create the product, tell the user
+	else{
+	    echo '{';
+	        echo '"message": "Tạo mới thất bại"';
+	    echo '}';
+	}
+	return true;
 };
 
 $channel->basic_consume('product_queue', '', false, true, false, false, $callback);
@@ -36,31 +69,5 @@ while (count($channel->callbacks)) {
     $channel->wait();
 }
 
-$data = json_decode($data);
 
-// set product property values
-$product->name = $data->name;
-$product->price = $data->price;
-$product->description = $data->description;
-$product->product_image = $data->product_image;
-$product->detail_image = $data->detail_image;
-$product->distributor = $data->distributor;
-$product->quantity = $data->quantity;
-$product->status = $data->status;
-$product->category_id = $data->category_id;
-$product->created_time = date('Y-m-d H:i:s');
-$product->purcharse_number = $data->purcharse_number;
-// create the product
-if($product->create()){
-    echo '{';
-        echo '"message": "Tạo mới một sản phẩm thành công"';
-    echo '}';
-}
- 
-// if unable to create the product, tell the user
-else{
-    echo '{';
-        echo '"message": "Tạo mới thất bại"';
-    echo '}';
-}
 ?>
