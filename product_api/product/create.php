@@ -19,7 +19,7 @@ include_once '../objects/product.php';
 
  
 // get data rabbitmq
-$connection = new AMQPConnection('localhost', 31234, 'guest', 'guest');
+$connection = new AMQPConnection('35.240.181.251', 31234, 'guest', 'guest');
 $channel    = $connection->channel();
 $channel->queue_declare('product_queue', false, false, false, false);
 
@@ -52,6 +52,7 @@ $callback = function ($msg) {
 	    echo '{';
 	        echo '"message": "Tạo mới một sản phẩm thành công"';
 	    echo '}';
+	    return true;
 	}
 	 
 	// if unable to create the product, tell the user
@@ -59,14 +60,18 @@ $callback = function ($msg) {
 	    echo '{';
 	        echo '"message": "Tạo mới thất bại"';
 	    echo '}';
+	    return false;
 	}
-	return true;
+	
 };
 
 $channel->basic_consume('product_queue', '', false, true, false, false, $callback);
 
 while (count($channel->callbacks)) {
     $channel->wait();
+    if ($channel->callbacks) {
+    	break;
+    }
 }
 
 
